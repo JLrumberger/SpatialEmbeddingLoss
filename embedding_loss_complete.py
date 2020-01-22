@@ -2,12 +2,14 @@ import numpy as np
 import tensorflow as tf
 
 def constr_phi_2D(center,scale):
-    # constructs function phi for an unnormalized 2D Gaussian
-    # center : 2 x 15
-    # scale  : 2 x 15
-    cen_x, cen_y = tf.split(center,2,axis=0) # 1 x 15, 1 x 15
-    scale = tf.exp(scale*10) # some dls from the neven implementation
-    sca_x, sca_y = tf.split(scale,2,axis=0)  # 1 x 15, 1 x 15
+    """
+    constructs function phi for an unnormalized 2D Gaussian
+    center: 2 x instances
+    scale: 2 x instances
+    """
+    cen_x, cen_y = tf.split(center,2,axis=0) # 1 x instances, 1 x instances
+    scale = tf.exp(scale*10) # taken from the neven implementation
+    sca_x, sca_y = tf.split(scale,2,axis=0)  # 1 x instances, 1 x instances
     def phi(e):
         # e : pixels x 2 or h x w x 2
         e_x,e_y = tf.split(e,2,axis=-1) # pixels x 1, pixels x 1 <- pixels x 2
@@ -18,10 +20,12 @@ def constr_phi_2D(center,scale):
 
 @tf.function
 def joint_loss_single(embeddings, sigma, correct_label):
-    # 2 D Version
-    # embeddings : 2 x h x w
-    # sigma  :  2 x h x w
-    # corre  :  1 x h x w
+    """
+    2D version
+    embeddings: 2 x h x w
+    sigma :  2 x h x w
+    correct label:  1 x h x w
+    """
     # prepare and reshape input
     num_dims = tf.rank(embeddings)-1 # 2
     reshaped_correct_label = tf.reshape(correct_label, [-1]) # pixels 
@@ -61,10 +65,12 @@ def joint_loss_single(embeddings, sigma, correct_label):
 
 @tf.function
 def seed_loss_single(seed_map, phi_e, correct_label):
-    # 2D Version
-    # seed_map : 1 x h x w
-    # correct_ : 1 x h x w
-    # phi_e    : instances x h x w
+    """
+    2D version
+    seed_map : 1 x h x w
+    correct_ : 1 x h x w
+    phi_e    : instances x h x w
+    """
     num_dims = tf.rank(phi_e)-1 # 2
     shape = tf.shape(seed_map) # 1 x h x w
     unique_labels, idx = tf.unique(tf.reshape(correct_label,[-1]))
@@ -91,6 +97,7 @@ def map_lovasz(label_phi):
     return lovasz
 
 # --------------------------- LOVASZ LOSSES ---------------------------
+# Code taken from https://github.com/bermanmaxim/LovaszSoftmax/tree/master/tensorflow
 
 def lovasz_grad(gt_sorted):
     """
