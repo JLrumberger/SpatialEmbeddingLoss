@@ -3,7 +3,7 @@ Tensorflow implementation of the Loss from 'Instance Segmentation by Jointly Opt
 
 This implementation uses the configuration with a 2-dimensional sigma and offset vectors pointing at the center of an instance in the embedding space, not in the image space. 
 The loss takes in the embeddings (instead of the offset vectors), which can be calculated as follows:
-´´´Python
+´´´python
 shape = tf.shape(offset) # 2 x h x w
 res = [tf.range(shape[1]), tf.range(shape[2])]
 dim_list = tf.meshgrid(*res, indexing='ij')
