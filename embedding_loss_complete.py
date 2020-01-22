@@ -1,4 +1,3 @@
-import numpy as np
 import tensorflow as tf
 
 def constr_phi_2D(center,scale):
