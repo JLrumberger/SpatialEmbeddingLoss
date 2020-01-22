@@ -10,10 +10,7 @@ dim_list = tf.meshgrid(*res, indexing='ij')
 mesh = tf.stack(dim_list, axis=0) # 2 x h x w
 # fill meshgrid with values between [0,1]
 mesh = tf.divide(mesh, tf.reduce_max(mesh))
-mesh = tf.cast(mesh,tf.float32)
-# e_i = x_i + o_i
 # tanh(offsets) turns them into unit vectors 
 offset = tf.tanh(offset)
-offset = tf.cast(offset,tf.float32)
 embeddings = mesh + offset # 2 x h x w
 ```
