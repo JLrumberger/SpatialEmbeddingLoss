@@ -15,6 +15,7 @@ offset = tf.tanh(offset)
 embeddings = mesh + offset # 2 x h x w
 ```
 
+### Prerequisites
 Dependencies: 
 - Tensorflow 2.0
 - Python 3.6.8  (or higher)
