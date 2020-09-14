@@ -39,14 +39,14 @@ def joint_loss_single(embeddings, sigma, correct_label):
     # Calculate mean sigma for each instance
     sigma_seg_sum = tf.matmul(tf.transpose(reshaped_sigma), correct_label_oh)
     sigma_mu = sigma_seg_sum/tf.reduce_sum(correct_label_oh,axis=0) # sigma_dim x instances
-    # constr_phi_2D was located here
+    # Construct phi and calculate phi(e)
     phi = constr_phi_2D(e_mu, sigma_mu)
     phi_e_reshaped = phi(reshaped_embeddings) # pixels x instances
     correct_label_oh = tf.one_hot(tf.cast(reshaped_correct_label,tf.int32), num_instances) # pixels x instances    ## DOUBLE
     # lovasz loss
     label_phi = tf.stack([correct_label_oh[:,1:], phi_e_reshaped[:,1:]], axis=0) # 2 x pixels x instances # background excluded by [:,1:]
     label_phi = tf.transpose(label_phi, [2,0,1]) # instances x 2 x pixels
-    lovasz_loss = tf.reduce_sum(tf.map_fn(map_lovasz, label_phi)) # maps over instances
+    lovasz_loss = tf.reduce_sum(tf.map_fn(map_lovasz, label_phi, parallel_iterations=15)) # maps over instances
     ### smoothness loss punishes intra instance sigma variance
     # sigma_i has only non-zero values where it belongs to the instance
     # inst x pixels x sigma_dim = inst x pixels x 1 * 1 x pixels x sigma_dim 
